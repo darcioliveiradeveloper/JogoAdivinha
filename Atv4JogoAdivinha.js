@@ -1,6 +1,14 @@
-const numeroMaximo = 100;
+const numeroMinimo = 100;
+const numeroMaximo = 200;
 const tentativasLimite = 10;
-const numeroAleatorio = Math.floor(Math.random() * numeroMaximo) + 1;
+
+function gerarNumero() {
+  return (
+    Math.floor(Math.random() * (numeroMaximo - numeroMinimo + 1)) + numeroMinimo
+  );
+}
+
+let numeroAleatorio = gerarNumero();
 
 const readline = require("readline");
 const rl = readline.createInterface({
@@ -11,49 +19,53 @@ const rl = readline.createInterface({
 let tentativas = 0;
 
 function perguntar() {
-  rl.question("Digite um número entre 1 e 100: ", function (resposta) {
-    const numeroUsuario = parseInt(resposta);
+  rl.question(
+    `Digite um número entre ${numeroMinimo} e ${numeroMaximo}: `,
+    function (resposta) {
+      const numeroUsuario = parseInt(resposta);
 
-    if (
-      isNaN(numeroUsuario) ||
-      numeroUsuario < 1 ||
-      numeroUsuario > numeroMaximo
-    ) {
-      console.log("Por favor, digite um número válido entre 1 e 100.");
-      perguntar();
-      return;
-    }
+      if (
+        isNaN(numeroUsuario) ||
+        numeroUsuario < numeroMinimo ||
+        numeroUsuario > numeroMaximo
+      ) {
+        console.log(
+          `Entrada inválida! Digite um número entre ${numeroMinimo} e ${numeroMaximo}.`,
+        );
+        perguntar();
+        return;
+      }
 
-    tentativas++;
+      tentativas++;
 
-    if (numeroUsuario === numeroAleatorio) {
-      console.log(
-        `Parabéns! Você acertou o número em ${tentativas} tentativa(s)!`,
-      );
-      reiniciar();
-    } else if (tentativas >= tentativasLimite) {
-      console.log(
-        `Suas tentativas acabaram! O número correto era ${numeroAleatorio}.`,
-      );
-      reiniciar();
-    } else if (numeroUsuario < numeroAleatorio) {
-      console.log("O número é maior. Tente novamente.");
-      perguntar();
-    } else {
-      console.log("O número é menor. Tente novamente.");
-      perguntar();
-    }
-  });
+      if (numeroUsuario === numeroAleatorio) {
+        console.log(`\nParabéns! Você acertou em ${tentativas} tentativa(s)!`);
+        reiniciar();
+      } else if (tentativas >= tentativasLimite) {
+        console.log(
+          `\nSuas tentativas acabaram! O número era ${numeroAleatorio}.`,
+        );
+        reiniciar();
+      } else {
+        const dica = numeroUsuario < numeroAleatorio ? "MAIOR" : "MENOR";
+        console.log(
+          `O número secreto é ${dica} que ${numeroUsuario}. (Tentativa ${tentativas}/${tentativasLimite})`,
+        );
+        perguntar();
+      }
+    },
+  );
 }
 
 function reiniciar() {
-  rl.question("Deseja jogar novamente? (s/n): ", function (resposta) {
+  rl.question("\nDeseja jogar novamente? (s/n): ", function (resposta) {
     if (resposta.toLowerCase() === "s") {
       tentativas = 0;
-      global.numeroAleatorio = Math.floor(Math.random() * numeroMaximo) + 1;
+      numeroAleatorio = gerarNumero();
+      console.log("\n--- Novo Jogo Iniciado ---");
       perguntar();
     } else {
-      console.log("Obrigado por jogar!");
+      console.log("Obrigado por jogar! Até a próxima.");
       rl.close();
     }
   });
